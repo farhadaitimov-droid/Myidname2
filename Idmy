@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Моё удостоверение</title>
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;background:#f6f7fb}
+.header{background:#1450C8;color:#fff;padding:14px 16px;text-align:center;font-weight:bold;font-size:18px}
+.container{padding:16px;max-width:600px;margin:0 auto}
+input,button{padding:10px;margin-top:6px;width:100%;border-radius:10px;border:1px solid #ccc;font-size:16px}
+button{cursor:pointer;background:#1450C8;color:#fff;border:none}
+button.outline{background:#fff;color:#1450C8;border:1px solid #1450C8}
+.preview{width:100%;height:220px;border:2px dashed #bbb;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-top:10px;background:#fafafa;overflow:hidden}
+.preview img{max-width:100%;max-height:100%}
+.showScreen{display:none;position:fixed;inset:0;background:#000;color:#fff;flex-direction:column;justify-content:center;align-items:center;padding:16px}
+.showScreen img{max-width:90%;max-height:60%;border-radius:12px;margin-bottom:16px}
+.showScreen div{font-size:20px;margin-bottom:6px;text-align:center}
+</style>
+</head>
+<body>
+<div class="header">Моё удостоверение</div>
+<div class="container">
+<label>ФИО</label>
+<input type="text" id="fullName" placeholder="Иванов Иван Иванович">
+<label>ИИН</label>
+<input type="text" id="iin" placeholder="12 цифр">
+<label>Дата рождения</label>
+<input type="text" id="birthDate" placeholder="ДД.ММ.ГГГГ">
+<div class="preview" id="preview">Здесь появится фото</div>
+<input type="file" id="photoInput" accept="image/*" style="display:none;">
+<button id="chooseBtn" class="outline">Выбрать фото</button>
+<button id="saveBtn">Сохранить</button>
+<button id="showBtn">Показать удостоверение</button>
+</div>
+
+<div class="showScreen" id="showScreen">
+<img id="showImg" src="">
+<div id="showName"></div>
+<div id="showIIN"></div>
+<div id="showBirth"></div>
+<button id="closeShow" class="outline">Закрыть</button>
+</div>
+
+<script>
+function saveData(){const data={fullName:document.getElementById('fullName').value,iin:document.getElementById('iin').value,birthDate:document.getElementById('birthDate').value,imageData:localStorage.getItem('imageData')||''};localStorage.setItem('idData',JSON.stringify(data));alert('Сохранено ✅')}
+function loadData(){const data=JSON.parse(localStorage.getItem('idData')||'{}');if(data.fullName)document.getElementById('fullName').value=data.fullName;if(data.iin)document.getElementById('iin').value=data.iin;if(data.birthDate)document.getElementById('birthDate').value=data.birthDate;if(data.imageData){const img=new Image();img.src=data.imageData;const preview=document.getElementById('preview');preview.innerHTML='';preview.appendChild(img)}}
+loadData();
+document.getElementById('chooseBtn').addEventListener('click',()=>{document.getElementById('photoInput').click()});
+document.getElementById('photoInput').addEventListener('change',async(e)=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(){localStorage.setItem('imageData',reader.result);const img=new Image();img.src=reader.result;const preview=document.getElementById('preview');preview.innerHTML='';preview.appendChild(img)};reader.readAsDataURL(file)});
+document.getElementById('saveBtn').addEventListener('click',saveData);
+document.getElementById('showBtn').addEventListener('click',()=>{const data=JSON.parse(localStorage.getItem('idData')||'{}');document.getElementById('showImg').src=data.imageData||'';document.getElementById('showName').textContent=data.fullName||'';document.getElementById('showIIN').textContent=data.iin?'ИИН: '+data.iin:'';document.getElementById('showBirth').textContent=data.birthDate?'ДР: '+data.birthDate:'';document.getElementById('showScreen').style.display='flex'});
+document.getElementById('closeShow').addEventListener('click',()=>{document.getElementById('showScreen').style.display='none'});
+</script>
+</body>
+</html>
